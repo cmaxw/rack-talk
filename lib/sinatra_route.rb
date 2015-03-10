@@ -35,10 +35,15 @@ class SinatraRoute
     request.params
   end
 
+  def erb(filename)
+    file = File.new(File.expand_path("../../views/#{filename}.erb", __FILE__))
+    ERB.new(file.read).result binding
+  end
+
   def call(env)
     @env = env
     if request_method == _request_method && path == _path
-      instance_eval(&_block)
+      ['200', {'Content-Type' => "text/html"}, [instance_eval(&_block).to_s]]
     else
       @app.call(env)
     end
